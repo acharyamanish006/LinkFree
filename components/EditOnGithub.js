@@ -10,8 +10,10 @@ export default function EditOnGitHub() {
   const router = useRouter();
   const { asPath } = router;
 
-  const githubUrl = `https://github.com/EddieHubCommunity/LinkFree/edit/main/pages${
-    asPath === "/docs" ? `/docs/index.js` : `${asPath}.mdx`
+  const githubUrl = `https://github.com/EddieHubCommunity/BioDrop/edit/main/pages${
+    asPath === "/docs" || asPath === "/docs/open-source-roadmap"
+      ? `${asPath}/index.js`
+      : `${asPath}.mdx`
   }`;
 
   return (
@@ -45,7 +47,7 @@ export default function EditOnGitHub() {
         <li>
           <a
             href={
-              "https://github.com/EddieHubCommunity/LinkFree/issues/new/choose"
+              "https://github.com/EddieHubCommunity/BioDrop/issues/new/choose"
             }
             className={className}
             target="_blank"

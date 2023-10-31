@@ -8,33 +8,15 @@ import Page from "@components/Page";
 import PageHead from "@components/PageHead";
 import { getEvents } from "../api/admin/events";
 
-import { serverEnv } from "@config/schemas/serverSchema";
 import Navigation from "@components/admin/Navigation";
 import Toggle from "@components/form/Toggle";
 import Notification from "@components/Notification";
+import { PROJECT_NAME } from "@constants/index";
+import Bulb from "@components/Bulb";
 
 export async function getServerSideProps(context) {
   const session = await getServerSession(context.req, context.res, authOptions);
-
-  if (!session) {
-    return {
-      redirect: {
-        destination: "/auth/signin",
-        permanent: false,
-      },
-    };
-  }
-
   const username = session.username;
-
-  if (!serverEnv.ADMIN_USERS.includes(username)) {
-    return {
-      redirect: {
-        destination: "/404",
-        permanent: false,
-      },
-    };
-  }
 
   let events = [];
   try {
@@ -83,7 +65,7 @@ export default function Events({ events }) {
     }
 
     setEventList(
-      eventList.map((event) => (event._id === _id ? updatedEvent : event))
+      eventList.map((event) => (event._id === _id ? updatedEvent : event)),
     );
 
     return setShowNotification({
@@ -97,8 +79,8 @@ export default function Events({ events }) {
   return (
     <>
       <PageHead
-        title="LinkFree admin over"
-        description="Overview for LinkFree admins"
+        title={`${PROJECT_NAME} admin over`}
+        description={`Overview for ${PROJECT_NAME} admins`}
       />
       <Page>
         <Navigation />
@@ -114,7 +96,7 @@ export default function Events({ events }) {
           additionalMessage={showNotification.additionalMessage}
         />
 
-        <ul role="list" className="divide-y divide-gray-100">
+        <ul role="list" className="divide-y divide-primary-low">
           {eventList.map((event) => (
             <li key={event._id} className="flex justify-between gap-x-6 py-5">
               <div className="flex gap-x-4">
@@ -133,17 +115,20 @@ export default function Events({ events }) {
                   }
                 />
                 <div className="min-w-0 flex-auto">
-                  <p className="text-sm font-semibold leading-6 text-gray-900">
+                  <p className="text-sm font-semibold leading-6 text-primary-high dark:text-primary-low">
                     {event.name}
                   </p>
-                  <p className="mt-1 truncate text-xs leading-5 text-gray-500">
-                    {event.username}
-                  </p>
+                  <div className="mt-1 truncate text-xs leading-5 text-primary-medium dark:text-primary-low-medium flex flex-row content-center gap-2 place-items-center">
+                    <Bulb isEnabled={!event.isShadowBanned} />
+                    <span>{event.username}</span>
+                  </div>
                 </div>
               </div>
               <div className="hidden sm:flex sm:flex-col sm:items-end">
-                <p className="text-sm leading-6 text-gray-900">{event.url}</p>
-                <p className="mt-1 text-xs leading-5 text-gray-500">
+                <p className="text-sm leading-6 text-primary-high dark:text-primary-low">
+                  {event.url}
+                </p>
+                <p className="mt-1 text-xs leading-5 text-primary-medium dark:text-primary-low">
                   {event.date?.start} - {event.date?.end}
                 </p>
               </div>

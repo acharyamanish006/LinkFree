@@ -1,41 +1,17 @@
-import { authOptions } from "../api/auth/[...nextauth]";
-import { getServerSession } from "next-auth/next";
 import { clientEnv } from "@config/schemas/clientSchema";
 
 import logger from "@config/logger";
 import Page from "@components/Page";
 import PageHead from "@components/PageHead";
 
-import { serverEnv } from "@config/schemas/serverSchema";
 import { getStatsApi } from "pages/api/admin/stats";
 import Navigation from "@components/admin/Navigation";
+import { PROJECT_NAME } from "@constants/index";
 
-export async function getServerSideProps(context) {
-  const session = await getServerSession(context.req, context.res, authOptions);
-
-  if (!session) {
-    return {
-      redirect: {
-        destination: "/auth/signin",
-        permanent: false,
-      },
-    };
-  }
-
-  const username = session.username;
-
-  if (!serverEnv.ADMIN_USERS.includes(username)) {
-    return {
-      redirect: {
-        destination: "/404",
-        permanent: false,
-      },
-    };
-  }
-
+export async function getServerSideProps() {
   let data = {};
   try {
-    data = await getStatsApi(username);
+    data = await getStatsApi();
   } catch (e) {
     logger.error(e, "server stats failed");
   }
@@ -43,7 +19,6 @@ export async function getServerSideProps(context) {
   return {
     props: {
       stats: data.stats,
-      username,
       BASE_URL: clientEnv.NEXT_PUBLIC_BASE_URL,
     },
   };
@@ -55,13 +30,15 @@ export default function Statistics({ stats }) {
     { id: 2, name: "Profiles using JSON", value: stats.profilesUsingJson },
     { id: 3, name: "Profiles using forms", value: stats.profilesUsingForms },
     { id: 4, name: "Profiles not enabled", value: stats.totalProfilesDisabled },
+    { id: 5, name: "Premium Profiles", value: stats.totalPremiumProfiles },
+    { id: 6, name: "Changelogs", value: stats.totalChangelogs },
   ];
 
   return (
     <>
       <PageHead
-        title="LinkFree admin over"
-        description="Overview for LinkFree admins"
+        title={PROJECT_NAME + " admin over"}
+        description={`Overview for ${PROJECT_NAME} admins`}
       />
       <Page>
         <Navigation />
@@ -69,11 +46,14 @@ export default function Statistics({ stats }) {
 
         <dl className="mt-16 grid grid-cols-1 gap-0.5 overflow-hidden rounded-2xl text-center sm:grid-cols-2 lg:grid-cols-4">
           {displayStats.map((stat) => (
-            <div key={stat.id} className="flex flex-col bg-gray-400/5 p-8">
-              <dt className="text-sm font-semibold leading-6 text-gray-600 dark:text-gray-300">
+            <div
+              key={stat.id}
+              className="flex flex-col bg-primary-medium/5 dark:bg-primary-low-medium/5 p-8"
+            >
+              <dt className="text-sm font-semibold leading-6 text-primary-medium dark:text-primary-low">
                 {stat.name}
               </dt>
-              <dd className="order-first text-3xl font-semibold tracking-tight text-gray-900 dark:text-gray-100">
+              <dd className="order-first text-3xl font-semibold tracking-tight text-primary-high dark:text-primary-low">
                 {stat.value}
               </dd>
             </div>

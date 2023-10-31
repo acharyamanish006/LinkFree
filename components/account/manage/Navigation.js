@@ -6,6 +6,8 @@ import {
   MdSpeakerNotes,
   MdCalendarMonth,
   MdOutlineBadge,
+  MdCode,
+  MdSettings,
 } from "react-icons/md";
 
 const tabs = [
@@ -26,7 +28,10 @@ const tabs = [
   {
     name: "Links",
     href: "/account/manage/links",
-    match: ["/account/manage/link/[[...data]]"],
+    match: [
+      "/account/manage/link/[[...data]]",
+      "/account/statistics/link/[[...data]]",
+    ],
     icon: MdOutlineLink,
     current: false,
   },
@@ -49,6 +54,20 @@ const tabs = [
     href: "/account/manage/testimonials",
     match: [],
     icon: MdSpeakerNotes,
+    current: false,
+  },
+  {
+    name: "Repos",
+    href: "/account/manage/repos",
+    match: ["/account/manage/repo/[[...data]]"],
+    icon: MdCode,
+    current: false,
+  },
+  {
+    name: "Premium",
+    href: "/account/manage/premium",
+    match: [],
+    icon: MdSettings,
     current: false,
   },
 ];
